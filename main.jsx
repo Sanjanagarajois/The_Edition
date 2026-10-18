@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+
+const styles = document.createElement('style');
+styles.textContent = String.raw`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap');
+:root{font-family:'DM Sans',Arial,sans-serif;color:#211e1a;background:#f3eee6;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;font-optical-sizing:auto;font-weight:400}*{box-sizing:border-box}body{margin:0}button,a{font:inherit}button{cursor:pointer}.page{max-width:1100px;margin:auto;padding:0 26px}.masthead{text-align:center;padding:38px 0 30px;border-bottom:2px solid #211e1a}.eyebrow{display:flex;align-items:center;justify-content:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.16em;color:#a92b22}.eyebrow span:last-child{color:#716a60;letter-spacing:0}.live-dot{width:7px;height:7px;background:#b52c23;border-radius:50%;box-shadow:0 0 0 5px #b52c2318}h1{font:600 clamp(54px,8vw,82px)/.98 Newsreader,Georgia,serif;letter-spacing:-.06em;margin:18px 0 8px}h1 span{color:#b52c23}.date{font-size:12px;color:#716a60}.intro{font-size:15px;max-width:490px;margin:18px auto 0;line-height:1.6}.controls{position:sticky;top:0;z-index:5;background:#f3eee6f5;backdrop-filter:blur(12px);padding:17px 0;border-bottom:1px solid #d8d0c3}.topic-list{display:flex;flex-wrap:wrap;gap:7px}.topic,.action{border:1px solid #d8d0c3;background:#faf7f2;border-radius:30px;padding:9px 13px;font-size:12px;color:#29251f}.topic.active,.action.active{background:#211e1a;color:#fffaf3;border-color:#211e1a}.actions{display:flex;gap:8px;margin-top:12px}.action{font-weight:600}.action:disabled{opacity:.5;cursor:wait}.hint{font-size:11px;color:#716a60;margin:10px 0 0}.layout{display:grid;grid-template-columns:1.05fr .95fr;gap:42px;padding:35px 0 55px}.section-heading{border-bottom:1px solid #cfc5b7;padding-bottom:14px;margin-bottom:17px}.section-heading span{font-size:10px;letter-spacing:.15em;color:#a92b22;font-weight:700}.section-heading h2{font:600 29px/1.1 Newsreader,Georgia,serif;margin:9px 0 0}.story{display:block;text-decoration:none;color:inherit;border-bottom:1px solid #d8d0c3;padding:16px 0}.story:hover h3{color:#a92b22}.featured{padding-top:0}.story-image{width:100%;max-height:230px;object-fit:cover;margin:0 0 13px;background:#e3dacf}.story-content .meta{font-size:10px;color:#716a60;margin:0 0 8px}.story h3{font:600 22px/1.18 Newsreader,Georgia,serif;letter-spacing:-.015em;margin:0 0 8px;transition:color .15s}.featured h3{font-size:31px}.summary{font-size:12px;line-height:1.6;color:#5f584f;margin:0 0 9px}.read{font-size:10px;font-weight:700;letter-spacing:.05em;color:#a92b22}.story-list .story h3{font-size:19px}.empty,.error{font-size:13px;color:#716a60;line-height:1.6}.error{padding:12px;background:#fff0ed;color:#a92b22}footer{border-top:1px solid #d8d0c3;padding:19px 0 28px;font-size:11px;color:#716a60;display:flex;justify-content:space-between;gap:10px}footer span{ text-align:right}@media(max-width:720px){.page{padding:0 17px}.masthead{padding-top:28px}.layout{grid-template-columns:1fr;gap:38px;padding-top:27px}.controls{position:relative}.section-heading h2{font-size:27px}.featured h3{font-size:28px}footer{flex-direction:column}footer span{text-align:left}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+`;
+document.head.appendChild(styles);
 
 const TOPICS = [
   ['technology', 'Technology'], ['science', 'Science'], ['business', 'Business'],
@@ -36,7 +43,7 @@ function StoryCard({ story, featured = false }) {
   </a>;
 }
 
-export default function App() {
+function App() {
   const [prefs, setPrefs] = useState({ topics: DEFAULTS, alerts: false });
   const [wire, setWire] = useState(null);
   const [error, setError] = useState('');
@@ -59,7 +66,8 @@ export default function App() {
   const load = useCallback(async (fresh = false) => {
     setBusy(true);
     try {
-      const response = await fetch(`/api/news${fresh ? '?fresh=1' : ''}`);
+      const api = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${api}/api/news${fresh ? '?fresh=1' : ''}`);
       if (!response.ok) throw new Error('News feed unavailable');
       const data = await response.json();
       if (!Array.isArray(data.headlines) || !data.desk) throw new Error('Invalid news response');
@@ -120,3 +128,6 @@ export default function App() {
     <footer>Edition · Less noise, more of what matters. <span>News from public RSS feeds · Auto-refreshes every minute</span></footer>
   </div>;
 }
+
+
+createRoot(document.getElementById('root')).render(<React.StrictMode><App /></React.StrictMode>);

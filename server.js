@@ -2,8 +2,14 @@ import express from 'express';
 import Parser from 'rss-parser';
 
 const app = express();
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 const parser = new Parser({ timeout: 8000 });
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 const topics = {
   technology: ['BBC Technology', 'https://feeds.bbci.co.uk/news/technology/rss.xml'],
   science: ['BBC Science', 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml'],
