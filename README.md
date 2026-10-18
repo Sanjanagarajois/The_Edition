@@ -15,7 +15,6 @@ Open http://localhost:5173. The Vite development server proxies `/api` to `http:
 
 ## Deployment
 
-- Frontend: deploy the repository root to Vercel with build command `npm run build` and output directory `dist`. Set `VITE_API_URL` to the deployed backend base URL (no trailing slash).
-- Backend: deploy this repository as a Node web service on Render. Build command: `npm install`; start command: `npm run server`. Set `FRONTEND_URL` to your Vercel URL. Render supplies `PORT` automatically.
+The site deploys to Netlify. `npm run build` outputs the frontend to `dist`, and the news API runs as a Netlify Function (`netlify/functions/news.mjs`) served at `/api/news`. The feed logic lives in `lib/news.js` and is shared with `server.js`, which is only used for local development.
 
-The backend endpoint is `/api/news`. RSS freshness and availability depend on the publishers.
+RSS freshness and availability depend on the publishers.
